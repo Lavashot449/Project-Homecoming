@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Veyra — Borderlands Showcase</title>
+<style>
+:root{
+  --bg:#09090d;
+  --panel:#12121a;
+  --panel-2:#181824;
+  --text:#f5f5f8;
+  --muted:#a8a8b7;
+  --line:rgba(255,255,255,.12);
+  --accent:#ffb000;
+  --accent2:#ff4b27;
+  --danger:#ff3b3b;
+  --success:#78d46b;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(255,176,0,.08), transparent 28%),
+    linear-gradient(180deg,#08080c,#0b0b11 45%,#08080c);
+}
+a{color:inherit}
+.site-shell{max-width:1320px;margin:0 auto;padding:24px}
+.topbar{
+  position:sticky;top:12px;z-index:20;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;border:1px solid var(--line);border-radius:16px;
+  background:rgba(12,12,18,.88);backdrop-filter:blur(14px)
+}
+.brand{font-weight:900;letter-spacing:.14em;text-decoration:none}
+.brand span{color:var(--accent)}
+.nav{display:flex;gap:18px}
+.nav a{color:var(--muted);text-decoration:none;font-size:.92rem}
+.nav a:hover{color:#fff}
+.hero{
+  display:grid;grid-template-columns:1.05fr .95fr;gap:34px;
+  align-items:center;padding:56px 0 28px
+}
+.hero-art{
+  min-height:560px;border-radius:28px;border:1px solid var(--line);
+  background:linear-gradient(145deg,#171722,#0d0d14);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  position:relative
+}
+.hero-art img{width:100%;height:100%;object-fit:cover}
+.placeholder{
+  color:#7f7f90;text-align:center;max-width:70%;line-height:1.5
+}
+.eyebrow{font-size:.82rem;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);font-weight:800}
+h1{font-size:clamp(3.4rem,8vw,7rem);line-height:.85;margin:10px 0 12px;letter-spacing:-.05em}
+.subtitle{font-size:1.5rem;color:#d8d8e2;font-weight:700}
+.quote{
+  margin:26px 0;padding:18px 20px;border-left:4px solid var(--accent);
+  background:linear-gradient(90deg,rgba(255,176,0,.10),transparent);
+  color:#ececf2;font-size:1.12rem
+}
+.pills{display:flex;gap:10px;flex-wrap:wrap}
+.pill{padding:9px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:rgba(255,255,255,.035);font-size:.84rem}
+.section{margin-top:48px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:18px}
+.section-head h2{font-size:2.2rem;margin:0}
+.section-head p{margin:0;color:var(--muted);max-width:720px}
+.card{
+  background:linear-gradient(180deg,var(--panel),#0f0f17);
+  border:1px solid var(--line);border-radius:22px;padding:24px
+}
+.action-skill{display:grid;grid-template-columns:110px 1fr;gap:22px;align-items:center}
+.action-icon{
+  width:110px;height:110px;border-radius:22px;border:1px solid var(--line);
+  display:grid;place-items:center;background:var(--panel-2);font-size:2.5rem
+}
+.action-skill h3{font-size:2rem;margin:0 0 8px}
+.action-skill p{color:#d7d7e2;line-height:1.65;margin:0}
+.calculator-toolbar{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+  margin-bottom:18px;flex-wrap:wrap
+}
+.points-box{font-weight:800}
+button{
+  border:1px solid var(--line);background:#191923;color:#fff;
+  padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700
+}
+button:hover{background:#222230}
+.tree-tabs{display:flex;gap:10px;flex-wrap:wrap}
+.tree-tab.active{outline:2px solid var(--tree-color,var(--accent));background:#20202c}
+.tree-panel{display:none}
+.tree-panel.active{display:block}
+.skill-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-auto-rows:minmax(92px,auto);gap:18px;
+}
+.skill-node{
+  position:relative;border:1px solid var(--line);border-radius:18px;
+  padding:14px;background:#14141d;transition:.18s ease;
+  min-height:92px;cursor:pointer
+}
+.skill-node.locked{opacity:.38;filter:grayscale(.5);cursor:not-allowed}
+.skill-node.available{box-shadow:0 0 0 1px var(--tree-color,var(--accent)) inset}
+.skill-node.maxed{box-shadow:0 0 22px rgba(255,255,255,.08),0 0 0 2px var(--tree-color,var(--accent)) inset}
+.skill-node:hover:not(.locked){transform:translateY(-2px)}
+.skill-top{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center}
+.skill-icon{
+  width:56px;height:56px;border-radius:14px;border:1px solid var(--line);
+  background:#0f0f16;object-fit:cover;display:grid;place-items:center;color:#777
+}
+.skill-name{font-weight:900}
+.skill-rank{font-weight:900;color:#fff}
+.skill-desc{margin-top:10px;color:var(--muted);font-size:.9rem;line-height:1.45}
+.skill-requirement{margin-top:8px;color:#85859a;font-size:.78rem}
+.two-col{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+.relationships{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.relationship{border:1px solid var(--line);border-radius:16px;padding:15px;background:#111119}
+.relationship strong{display:block;margin-bottom:5px}
+.roster{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:24px}
+.roster-card{
+  text-decoration:none;border:1px solid var(--line);border-radius:22px;overflow:hidden;
+  background:#101018;transition:.18s ease
+}
+.roster-card:hover{transform:translateY(-4px);border-color:rgba(255,176,0,.5)}
+.roster-image{height:300px;background:#161620;display:grid;place-items:center;color:#777}
+.roster-image img{width:100%;height:100%;object-fit:cover}
+.roster-copy{padding:18px}
+.roster-copy h3{margin:0 0 5px;font-size:1.35rem}
+.roster-copy p{margin:0;color:var(--muted)}
+.footer{margin:56px 0 10px;padding-top:22px;border-top:1px solid var(--line);color:#777}
+@media(max-width:980px){
+  .hero,.two-col{grid-template-columns:1fr}
+  .roster{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+  .site-shell{padding:14px}
+  .nav{display:none}
+  .hero{padding-top:30px}
+  .hero-art{min-height:420px}
+  .skill-grid{grid-template-columns:1fr}
+  .roster{grid-template-columns:1fr}
+  .relationships{grid-template-columns:1fr}
+  .action-skill{grid-template-columns:1fr}
+}
+.skill-numbers{
+  margin-top:9px;padding:9px 10px;border-radius:10px;
+  background:rgba(255,255,255,.035);border:1px solid var(--line);
+  color:#d9d9e5;font-size:.82rem;line-height:1.4
+}
+.skill-icon-fallback{
+  font-size:.72rem;font-weight:1000;letter-spacing:.05em;
+  color:var(--tree-color,var(--accent));
+  background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.08),rgba(255,255,255,.02));
+}
+
+</style>
+</head>
+<body>
+<div class="site-shell">
+<header class="topbar">
+<a class="brand" href="index.html">BORDERLANDS <span>SHOWCASE</span></a>
+<nav class="nav"><a href="index.html">Vault Hunters</a><a href="#skill-tree">Skill Calculator</a><a href="#lore">Lore</a></nav>
+</header>
+
+<main class="hero">
+<div class="hero-art" id="portrait"><div class="placeholder">Character-only portrait goes here.<br>Drop the final image into assets/portraits/ and reference it from the character JSON.</div></div>
+<div>
+<div class="eyebrow">Vault Hunter</div>
+<h1 id="character-name">Veyra</h1>
+<div class="subtitle" id="character-title"></div>
+<div class="quote" id="character-quote"></div>
+<div class="pills"><span class="pill">Dynamic skill calculator</span><span class="pill">Character data driven</span><span class="pill">GitHub Pages ready</span></div>
+</div>
+</main>
+
+<section class="section">
+<div class="section-head"><h2>Action Skill</h2><p>Base action skill before tree-specific augmentations.</p></div>
+<div class="card action-skill"><div class="action-icon">⚡</div><div><h3 id="action-name"></h3><div id="action-description"></div></div></div>
+</section>
+
+<section class="section" id="skill-tree">
+<div class="section-head"><h2>Skill Calculator</h2><p>Left-click to invest a point. Right-click to remove one. Locked tiers unlock as points are spent.</p></div>
+<div class="calculator-toolbar">
+<div class="tree-tabs" id="tree-tabs"></div>
+<div style="display:flex;gap:10px;align-items:center"><div class="points-box">Total Points: <span id="total-points">0</span></div><button onclick="resetBuild()">Reset Build</button></div>
+</div>
+<div id="tree-panels"></div>
+</section>
+
+<section class="section two-col" id="lore">
+<div class="card"><h2>Backstory</h2><div id="backstory"></div></div>
+<div class="card"><h2>Relationships</h2><div class="relationships" id="relationships"></div></div>
+</section>
+
+<footer class="footer">Borderlands Showcase · GitHub Pages skeleton</footer>
+</div>
+<script>
+const EMBEDDED_CHARACTER_DATA = {"slug": "veyra", "name": "Veyra", "title": "The Threadbound", "quote": "Everything is connected. I just decide how.", "portrait": "", "theme": {"accent": "#b14cff"}, "actionSkill": {"name": "Phaseweave", "description": "<p>Veyra weaves Siren threads, manipulating the connections between things. She doesn’t move them—she connects them.</p><p>Her three skill trees reshape Phaseweave into <strong>Phasebind</strong>, <strong>Phasetether</strong>, and <strong>Phasebraid</strong>.</p>"}, "backstory": "<p>Veyra remembers the first thread she ever saw.</p>\n<p>She was a child when two people she loved were arguing. Nothing unusual—raised voices, anger, the kind of fight children are supposed to forget. But Veyra saw something between them: a thin strand of violet light stretched from one person to the other. When one hurt, the thread tightened. When the other became angry, it burned brighter.</p>\n<p>Veyra reached for it. Both of them screamed. That was the first time Veyra understood that everything was connected.</p>\n<p>She grew up far from the great corporate worlds, where Sirens were stories told by travelers and scavengers. Her markings were hidden whenever possible. Not because her family understood what she was, but because they understood enough about the galaxy to know that anything unusual eventually attracted someone with a gun, a laboratory, or a price tag.</p>\n<p>Her abilities developed differently from those of the legendary Sirens she would later learn about. Veyra couldn't Phasewalk. She couldn't Phaselock an enemy in midair or pulverize someone with spectral fists. She saw <strong>relationships</strong>.</p>\n<p>Living things appeared to her as knots in an impossibly vast weave. Violence pulled on those knots. Loyalty strengthened them. Hatred twisted them together. Even objects and places sometimes seemed connected by invisible strands of cause and consequence. And Veyra discovered she could touch those strands.</p>\n<p>She called the ability <strong>Phaseweave</strong>.</p>\n<p>At first she could create only simple connections. Two wounds might suddenly behave like one. Strength granted to one person could bleed into another. An enemy attempting to flee could discover that the space between themselves and a chosen point had become something almost physical.</p>\n<p>As Veyra's power grew, so did the complexity of the weave she could manipulate. She learned to <strong>bind fates</strong>, causing several enemies to share one another's suffering. She learned to create <strong>tethers</strong>, turning distance itself into a restraint. Eventually she learned the most dangerous technique of all: weaving herself directly into another living being, allowing power, pain, healing, and even death to travel between them.</p>\n<p>That discovery changed her. Phaseweave taught Veyra something most people never have to confront: nobody is truly isolated. Every decision pulls on someone else's thread.</p>\n<p>That doesn't make Veyra gentle. It makes her deliberate.</p>\n<p>By the time rumors of Vaults and Sirens began drawing increasingly dangerous forces across the galaxy, Veyra had already spent years following the strange disturbances she could feel through the weave. Wherever Sirens gathered, the threads seemed to tighten.</p>\n<p>Eventually, those threads led her toward Pandora—and toward the other women whose lives had become inseparable from the history of the Vaults.</p>\n<p>Veyra doesn't believe meeting them was destiny. She believes <strong>destiny is simply what people call a connection they noticed too late.</strong></p>", "relationships": [{"name": "Lilith — The Firehawk", "description": "Veyra respects Lilith enormously, but the two never entirely agree about what being a Siren means. Lilith learned to wield her power like a weapon; Veyra learned to treat hers like a responsibility. To Veyra, Lilith's connections are almost overwhelming: Roland, Sanctuary, Pandora, the Crimson Raiders, and everyone who looked toward the Firehawk when they needed someone to save them. Veyra once described Lilith as “a woman trying to hold an army together with threads made from herself.” Lilith didn't particularly enjoy the description. She also didn't disagree. Veyra regards Lilith as the closest thing the modern Sirens have to an elder sister—even if neither woman would ever use the phrase aloud."}, {"name": "Maya — The Scholar", "description": "Of all the Sirens Veyra learns about, Maya fascinates her most intellectually. Maya approached Siren powers as something that could be studied rather than merely survived. Phaselock and Phaseweave also seem philosophically opposite: Maya isolated something from the world by suspending it, while Veyra connects things more deeply to the world around them. Veyra becomes particularly interested in Maya's writings and research into Eridian history. Maya represents proof that understanding Siren abilities doesn't diminish their mystery; it gives the mystery language."}, {"name": "Amara — The Tiger", "description": "Amara and Veyra get along considerably better than either initially expects. Amara's philosophy is wonderfully uncomplicated: if something deserves punching, punch it. Veyra's philosophy tends to involve several paragraphs about interconnected consequences. Amara finds this hilarious; Veyra finds Amara exhausting. They become friends anyway. Veyra especially admires Amara's complete lack of shame regarding being a Siren. Veyra spent much of her early life hiding what she was; Amara practically announces it to the galaxy. Amara tells her, “You spend way too much time thinking about what connects everybody.” Veyra answers, “And you spend remarkably little.” Amara: “Yeah. Saves time.”"}, {"name": "Ava — The Inheritor", "description": "Veyra's relationship with Ava is more protective. She sees someone handed an enormous legacy before she had enough time to understand the person who gave it to her. Veyra refuses to treat Ava as merely Maya's successor. To Veyra, that would misunderstand inheritance: a thread can continue through someone without turning that person into whoever held it before them. She encourages Ava to learn from Maya without trying to become Maya. When Ava worries that she isn't ready to carry that legacy, Veyra tells her, “Good. People who think they're ready for that much power usually shouldn't have it.”"}, {"name": "Angel — The Ghost in the Machine", "description": "Angel affects Veyra differently because their relationship exists largely through what Veyra learns after Angel is already gone. Angel's story horrifies her. A Siren whose connection to machines became the instrument of her imprisonment is almost a nightmare version of Veyra's own philosophy. Connection is supposed to create possibility; Handsome Jack turned Angel's connections into chains. Veyra considers Angel one of the clearest examples of why Sirens must be allowed to define themselves before governments, corporations, cults—or parents—decide what their abilities are worth."}, {"name": "Commandant Steele — The Warning", "description": "Veyra never romanticizes Steele simply because she was another Siren. Steele represents an uncomfortable truth: being a Siren does not make someone good. Veyra knows relatively little about Steele compared with Lilith or Maya, and that uncertainty makes Steele more interesting to her. Another Siren operated on Pandora, commanded Atlas forces, pursued the Vault, and died before much of her power or history became known. Veyra regards Steele less as an ancestor and more as a warning. Sirenhood connects these women. It does not absolve them."}, {"name": "Patricia Tannis — The Almost-Siren", "description": "Tannis fascinates Veyra—not simply because Tannis inherited Angel's powers, but because Tannis is Tannis. Of course Patricia Tannis became capable of speaking directly to machines; the universe apparently has a sense of humor. Their conversations become equal parts genuine Siren research and two extraordinarily intense women correcting one another's terminology. Tannis wants to quantify Phaseweave. Veyra insists some aspects cannot be reduced to measurements. Tannis considers this an unacceptable challenge; Veyra considers Tannis trying anyway deeply entertaining. Despite their disagreements, Veyra trusts her. Tannis is one of the few people capable of discussing Siren abilities without immediately turning the conversation toward worship, fear, or weaponization. Veyra also recognizes something strangely beautiful: Tannis spent much of her life struggling to connect with people, then inherited a Siren power built around connection."}], "trees": [{"id": "shared-fate", "name": "Shared Fate", "color": "#c04cff", "description": "Violet / magenta. Weave enemies together so damage and status effects propagate across a network.", "skills": [{"id": "sf-tangled-ends", "name": "Tangled Ends", "description": "Dealing Gun Damage to an enemy increases the Elemental Damage they take.", "maxRank": 5, "pointsRequired": 0, "type": "Minor", "position": {"tier": 1, "column": 1}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify a per-rank percentage."}, {"id": "sf-sympathetic-pain", "name": "Sympathetic Pain", "description": "Whenever you inflict a Status Effect on an enemy, they take increased Gun Damage.", "maxRank": 5, "pointsRequired": 0, "type": "Minor", "position": {"tier": 1, "column": 2}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify a per-rank percentage."}, {"id": "sf-crossed-wires", "name": "Crossed Wires", "description": "Damaging an enemy with one Element increases the damage of the next different Element you deal.", "maxRank": 5, "pointsRequired": 0, "type": "Minor", "position": {"tier": 1, "column": 3}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify a per-rank percentage."}, {"id": "sf-loose-threads", "name": "Loose Threads", "description": "Killing an enemy affected by a Status Effect causes nearby enemies to take a portion of the killing blow’s damage.", "maxRank": 5, "pointsRequired": 5, "type": "Minor", "position": {"tier": 2, "column": 1}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the transferred-damage percentage."}, {"id": "sf-shared-burden", "name": "Shared Burden", "description": "When you damage multiple different enemies, gain increased Gun Damage for each unique enemy damaged.", "maxRank": 5, "pointsRequired": 5, "type": "Minor", "position": {"tier": 2, "column": 2}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the bonus per unique enemy."}, {"id": "sf-resonance", "name": "Resonance", "description": "Applying a Status Effect to an enemy already suffering from a different Status Effect causes an Elemental damage burst.", "maxRank": 5, "pointsRequired": 5, "type": "Minor", "position": {"tier": 2, "column": 3}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify burst scaling."}, {"id": "sf-threads-of-fate", "name": "Threads of Fate", "description": "Damaging an enemy Weaves them for 6 seconds. Damage another enemy to create a Thread between them. Up to 3 enemies can be Woven. Woven enemies share damage and Status Effects. When a Woven enemy dies, its Thread seeks a new enemy to weave, continuing the connection.", "maxRank": 1, "pointsRequired": 10, "type": "Bridge", "position": {"tier": 3, "column": 2}, "icon": "", "numericDetails": "Weave duration: 6s. Maximum Woven enemies: 3."}, {"id": "sf-inherited-suffering", "name": "Inherited Suffering", "description": "When an enemy becomes Woven by replacing a slain Woven enemy, it takes Elemental Damage and inherits the Status Effects that were on the slain enemy.", "maxRank": 5, "pointsRequired": 15, "type": "Minor", "position": {"tier": 4, "column": 1}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify damage scaling."}, {"id": "sf-severance", "name": "Severance", "description": "When a Thread breaks because a Woven enemy dies, it snaps and deals Elemental Damage to every other connected enemy.", "maxRank": 5, "pointsRequired": 15, "type": "Minor", "position": {"tier": 4, "column": 3}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify snap-damage scaling."}, {"id": "sf-phasebind", "name": "Phasebind", "description": "Phaseweave is replaced by Phasebind. Bind the fate of up to 4 nearby enemies for 12 seconds. All Phasebound enemies are connected. Damage and Status Effects spread between them. When an enemy dies, its Threads collapse, hurting the rest and increasing shared damage. If one enemy remains, it takes +50% Damage from all sources.", "maxRank": 1, "pointsRequired": 20, "type": "Capstone", "position": {"tier": 5, "column": 2}, "icon": "", "numericDetails": "Maximum targets: 4. Duration: 12s. Last remaining enemy: +50% Damage taken."}]}, {"id": "ties-that-bind", "name": "Ties That Bind", "color": "#5f7dff", "description": "Electric blue-purple. Tether enemies, punish movement, and violently snap them back into position.", "skills": [{"id": "ttb-short-leash", "name": "Short Leash", "description": "Deal increased Gun Damage to enemies within close range.", "maxRank": 5, "pointsRequired": 0, "type": "Minor", "position": {"tier": 1, "column": 1}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the close-range damage percentage."}, {"id": "ttb-tension", "name": "Tension", "description": "Deal increased Damage to enemies that are moving toward or away from you.", "maxRank": 5, "pointsRequired": 0, "type": "Minor", "position": {"tier": 1, "column": 2}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the movement-damage percentage."}, {"id": "ttb-violent-recoil", "name": "Violent Recoil", "description": "Whenever an enemy is forcibly moved, they take increased Damage for a short time.", "maxRank": 5, "pointsRequired": 0, "type": "Minor", "position": {"tier": 1, "column": 3}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the damage increase or duration."}, {"id": "ttb-give-and-take", "name": "Give and Take", "description": "Taking damage increases your Movement Speed and Gun Damage for a short time.", "maxRank": 5, "pointsRequired": 5, "type": "Minor", "position": {"tier": 2, "column": 1}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the bonuses or duration."}, {"id": "ttb-no-escape", "name": "No Escape", "description": "Damaging an enemy repeatedly causes them to deal less damage to you.", "maxRank": 5, "pointsRequired": 5, "type": "Minor", "position": {"tier": 2, "column": 2}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the reduction per stack."}, {"id": "ttb-whiplash", "name": "Whiplash", "description": "Enemies that collide with terrain after being forcibly moved take bonus damage.", "maxRank": 5, "pointsRequired": 5, "type": "Minor", "position": {"tier": 2, "column": 3}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify collision-damage scaling."}, {"id": "ttb-bound-by-force", "name": "Bound by Force", "description": "Damaging an enemy with Phaseweave attaches a Siren Tether between you and that enemy for 8 seconds. The enemy can move normally within the Tether’s radius. If they move beyond it, the Tether becomes Taut. After 1 second, the enemy is violently pulled back toward you, taking Siren Damage and becoming briefly staggered. After snapping an enemy back, the Tether’s maximum length is permanently reduced by 20% for its remaining duration. The Tether can snap the same enemy multiple times.", "maxRank": 1, "pointsRequired": 10, "type": "Bridge", "position": {"tier": 3, "column": 2}, "icon": "", "numericDetails": "Tether duration: 8s. Taut delay: 1s. Radius reduction per Snap: 20%."}, {"id": "ttb-stranglehold", "name": "Stranglehold", "description": "Whenever a Tether snaps an enemy backward, you gain increased Gun Damage for a short time.", "maxRank": 5, "pointsRequired": 15, "type": "Minor", "position": {"tier": 4, "column": 1}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the Gun Damage bonus or duration."}, {"id": "ttb-breaking-point", "name": "Breaking Point", "description": "Each time the same enemy triggers a Tether, the next Tether Snap against them deals increased damage.", "maxRank": 5, "pointsRequired": 15, "type": "Minor", "position": {"tier": 4, "column": 3}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the per-snap scaling."}, {"id": "ttb-phasetether", "name": "Phasetether", "description": "Phaseweave is replaced by Phasetether. Target an enemy to drive a Siren Anchor into their location for 12 seconds. The target is connected to the Anchor by an unbreakable Phasetether. Crossing the boundary causes the Tether to become Taut. After 0.5 seconds, the enemy is ripped back toward the Anchor, dealing Siren Damage to the target and enemies it collides with.", "maxRank": 1, "pointsRequired": 20, "type": "Capstone", "position": {"tier": 5, "column": 2}, "icon": "", "numericDetails": "Anchor duration: 12s. Taut delay: 0.5s. Tether: unbreakable."}]}, {"id": "entanglement", "name": "Entanglement", "color": "#df3f9e", "description": "Deep indigo / pink. Braid Veyra to allies or enemies to share restoration, copy bonuses, redirect damage, and siphon power.", "skills": [{"id": "ent-give-a-little", "name": "Give a Little", "description": "Whenever you restore Health, gain increased Gun Damage for a short time.", "maxRank": 5, "pointsRequired": 0, "type": "Minor", "position": {"tier": 1, "column": 1}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the Gun Damage bonus or duration."}, {"id": "ent-take-a-little", "name": "Take a Little", "description": "Dealing Gun Damage restores a small portion of your Shield.", "maxRank": 5, "pointsRequired": 0, "type": "Minor", "position": {"tier": 1, "column": 2}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify Shield restoration per rank."}, {"id": "ent-mutual-interest", "name": "Mutual Interest", "description": "While near an ally, both you and that ally gain increased Reload Speed and Fire Rate. When solo, you gain both bonuses yourself.", "maxRank": 5, "pointsRequired": 0, "type": "Minor", "position": {"tier": 1, "column": 3}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the bonuses per rank."}, {"id": "ent-parasitic-bond", "name": "Parasitic Bond", "description": "Whenever an enemy restores Health or Shields, you receive a portion of the amount restored.", "maxRank": 5, "pointsRequired": 5, "type": "Minor", "position": {"tier": 2, "column": 1}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the siphoned percentage."}, {"id": "ent-feedback-loop", "name": "Feedback Loop", "description": "Breaking an enemy’s Shield begins restoring a portion of your own Shield over time.", "maxRank": 5, "pointsRequired": 5, "type": "Minor", "position": {"tier": 2, "column": 2}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify restoration amount or duration."}, {"id": "ent-borrowed-strength", "name": "Borrowed Strength", "description": "Kill Skill: Killing an enemy temporarily increases the effectiveness of bonuses currently affecting you.", "maxRank": 5, "pointsRequired": 5, "type": "Minor", "position": {"tier": 2, "column": 3}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the effectiveness increase or duration."}, {"id": "ent-soulstitch", "name": "Soulstitch", "description": "Using Phaseweave on an enemy or ally creates a Braid between them and you for 10 seconds. Braided to an enemy: 20% of Health they restore is instead restored to you; 20% of Shield they restore is instead restored to your Shield; when they receive a temporary Damage, Fire Rate, Movement Speed, or Damage Resistance bonus, you receive 50% of that bonus for its remaining duration. Braided to an ally: whenever either character restores Health or Shields, the other receives 25% of the amount restored; temporary Damage, Fire Rate, and Movement Speed bonuses affecting either character are shared at 25% effectiveness. Only one Braid may exist at a time.", "maxRank": 1, "pointsRequired": 10, "type": "Bridge", "position": {"tier": 3, "column": 2}, "icon": "", "numericDetails": "Braid duration: 10s. Enemy restoration steal: 20% Health / 20% Shield. Enemy temporary bonus copy: 50%. Ally restoration sharing: 25%. Ally temporary bonus sharing: 25%. One Braid maximum."}, {"id": "ent-unwanted-contribution", "name": "Unwanted Contribution", "description": "While Braided to an enemy, a portion of the damage you take is redirected through the Braid to that enemy.", "maxRank": 5, "pointsRequired": 15, "type": "Minor", "position": {"tier": 4, "column": 1}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify redirected damage per rank."}, {"id": "ent-compound-interest", "name": "Compound Interest", "description": "Whenever you receive a benefit through a Braid, its effectiveness increases for the remainder of that Braid.", "maxRank": 5, "pointsRequired": 15, "type": "Minor", "position": {"tier": 4, "column": 3}, "icon": "", "numericDetails": "5 ranks. The approved source does not specify the effectiveness increase per rank."}, {"id": "ent-phasebraid", "name": "Phasebraid", "description": "Phaseweave is replaced by Phasebraid. Create an empowered Braid with an enemy or ally for 15 seconds. Enemies: steal 50% of all Health and Shield restoration; copy 100% of temporary Damage, Fire Rate, Movement Speed, and Damage Resistance bonuses; 25% of damage dealt to you is redirected to the Braided enemy. Allies: share all Health and Shield restoration at 50% effectiveness and copy temporary combat bonuses at 50% effectiveness. If the Braided ally enters Fight For Your Life, the Braid severs and transfers 50% of your current Health to revive them. If a Braided enemy dies, Phasebraid seeks the nearest enemy and attaches to them for the remaining duration. Cooldown: 35 seconds.", "maxRank": 1, "pointsRequired": 20, "type": "Capstone", "position": {"tier": 5, "column": 2}, "icon": "", "numericDetails": "Duration: 15s. Enemy restoration steal: 50%. Enemy temporary bonus copy: 100%. Damage redirection: 25%. Ally restoration and temporary bonus sharing: 50%. Ally revive transfer: 50% current Health. Cooldown: 35s."}]}]};
+const state = { character:null, spentByTree:{}, ranks:{} };
+
+async function loadCharacterData(slug){
+  const res = await fetch(`data/${slug}.json`);
+  if(!res.ok) throw new Error(`Could not load ${slug}.json`);
+  const data = await res.json();
+  state.character = data;
+  initializeState(data);
+  renderCharacter(data);
+}
+
+function initializeState(data){
+  state.spentByTree = {};
+  state.ranks = {};
+  data.trees.forEach(tree=>{
+    state.spentByTree[tree.id] = 0;
+    tree.skills.forEach(skill=> state.ranks[skill.id] = 0);
+  });
+}
+
+function renderCharacter(data){
+  document.documentElement.style.setProperty('--accent', data.theme?.accent || '#ffb000');
+  setText('character-name', data.name);
+  setText('character-title', data.title);
+  setText('character-quote', data.quote || '');
+  setText('action-name', data.actionSkill.name);
+  document.getElementById('action-description').innerHTML = data.actionSkill.description || '';
+  document.getElementById('backstory').innerHTML = data.backstory || '<p>Backstory pending.</p>';
+
+  const portrait = document.getElementById('portrait');
+  if(data.portrait){
+    portrait.innerHTML = `<img src="${data.portrait}" alt="${data.name} portrait">`;
+  }
+
+  const rel = document.getElementById('relationships');
+  rel.innerHTML = (data.relationships || []).map(r =>
+    `<div class="relationship"><strong>${r.name}</strong><span>${r.description}</span></div>`
+  ).join('') || '<div class="relationship">Relationship data pending.</div>';
+
+  renderTrees(data);
+}
+
+function renderTrees(data){
+  const tabs = document.getElementById('tree-tabs');
+  const panels = document.getElementById('tree-panels');
+  tabs.innerHTML = '';
+  panels.innerHTML = '';
+
+  data.trees.forEach((tree, index)=>{
+    const tab = document.createElement('button');
+    tab.className = 'tree-tab' + (index===0?' active':'');
+    tab.textContent = tree.name;
+    tab.style.setProperty('--tree-color', tree.color);
+    tab.onclick = ()=>activateTree(tree.id);
+    tabs.appendChild(tab);
+
+    const panel = document.createElement('div');
+    panel.id = `tree-${tree.id}`;
+    panel.className = 'tree-panel' + (index===0?' active':'');
+    panel.style.setProperty('--tree-color', tree.color);
+
+    const title = document.createElement('div');
+    title.className = 'card';
+    title.style.marginBottom = '18px';
+    title.innerHTML = `<h3 style="margin-top:0">${tree.name}</h3><p style="color:var(--muted);margin-bottom:0">${tree.description || ''}</p>`;
+    panel.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'skill-grid';
+
+    tree.skills.forEach(skill=>{
+      const node = document.createElement('div');
+      node.className = 'skill-node';
+      node.dataset.skillId = skill.id;
+      node.dataset.treeId = tree.id;
+      node.style.gridColumn = skill.position?.column || 2;
+      node.style.gridRow = skill.position?.tier || 1;
+      node.style.setProperty('--tree-color', tree.color);
+      node.onclick = ()=>spendPoint(tree.id, skill.id);
+
+      const icon = skill.icon
+        ? `<img class="skill-icon" src="${skill.icon}" alt="${skill.name} icon">`
+        : `<div class="skill-icon skill-icon-fallback">${skill.name.split(/\s+/).map(w=>w[0]).join('').slice(0,3)}</div>`;
+
+      node.innerHTML = `
+        <div class="skill-top">
+          ${icon}
+          <div><div class="skill-name">${skill.name}</div><div class="skill-requirement">${skill.type || 'Skill'} · Tier ${skill.position?.tier || 1}</div></div>
+          <div class="skill-rank" id="rank-${skill.id}">0/${skill.maxRank}</div>
+        </div>
+        <div class="skill-desc">${skill.description || 'Description pending.'}</div>
+        ${skill.numericDetails ? `<div class="skill-numbers"><strong>Numbers:</strong> ${skill.numericDetails}</div>` : ''}
+        <div class="skill-requirement">Calculator unlock threshold: ${skill.pointsRequired || 0} points in this tree.</div>`;
+      grid.appendChild(node);
+    });
+
+    panel.appendChild(grid);
+    panels.appendChild(panel);
+  });
+  refreshTreeUI();
+}
+
+function activateTree(id){
+  document.querySelectorAll('.tree-tab').forEach((b,i)=>{
+    b.classList.toggle('active', state.character.trees[i].id === id);
+  });
+  document.querySelectorAll('.tree-panel').forEach(p=>p.classList.toggle('active', p.id === `tree-${id}`));
+}
+
+function spendPoint(treeId, skillId){
+  const tree = state.character.trees.find(t=>t.id===treeId);
+  const skill = tree.skills.find(s=>s.id===skillId);
+  const rank = state.ranks[skillId] || 0;
+  if(rank >= skill.maxRank) return;
+
+  const spent = state.spentByTree[treeId] || 0;
+  if(spent < (skill.pointsRequired || 0)) return;
+
+  if(skill.prerequisite){
+    const prereqRank = state.ranks[skill.prerequisite.skillId] || 0;
+    if(prereqRank < (skill.prerequisite.rank || 1)) return;
+  }
+
+  state.ranks[skillId] = rank + 1;
+  state.spentByTree[treeId] = spent + 1;
+  refreshTreeUI();
+}
+
+function removePoint(treeId, skillId){
+  const rank = state.ranks[skillId] || 0;
+  if(rank <= 0) return;
+  state.ranks[skillId] = rank - 1;
+  state.spentByTree[treeId] -= 1;
+  refreshTreeUI();
+}
+
+function refreshTreeUI(){
+  let total = 0;
+  state.character.trees.forEach(tree=>{
+    total += state.spentByTree[tree.id] || 0;
+    tree.skills.forEach(skill=>{
+      const node = document.querySelector(`[data-skill-id="${skill.id}"]`);
+      if(!node) return;
+      const rank = state.ranks[skill.id] || 0;
+      const spent = state.spentByTree[tree.id] || 0;
+      let unlocked = spent >= (skill.pointsRequired || 0);
+
+      if(skill.prerequisite){
+        unlocked = unlocked && (state.ranks[skill.prerequisite.skillId] || 0) >= (skill.prerequisite.rank || 1);
+      }
+
+      node.classList.toggle('locked', !unlocked);
+      node.classList.toggle('available', unlocked && rank < skill.maxRank);
+      node.classList.toggle('maxed', rank >= skill.maxRank);
+      setText(`rank-${skill.id}`, `${rank}/${skill.maxRank}`);
+
+      node.oncontextmenu = e=>{
+        e.preventDefault();
+        removePoint(tree.id, skill.id);
+      };
+    });
+  });
+  setText('total-points', total);
+}
+
+function resetBuild(){
+  initializeState(state.character);
+  refreshTreeUI();
+}
+
+function setText(id,value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value ?? '';
+}
+window.addEventListener('DOMContentLoaded', () => {
+  state.character = EMBEDDED_CHARACTER_DATA;
+  initializeState(EMBEDDED_CHARACTER_DATA);
+  renderCharacter(EMBEDDED_CHARACTER_DATA);
+});
+</script>
+</body></html>
